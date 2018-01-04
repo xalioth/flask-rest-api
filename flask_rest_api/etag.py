@@ -6,6 +6,7 @@ from flask import request, current_app, json
 
 from .exceptions import PreconditionRequired, PreconditionFailed, NotModified
 from .utils import get_appcontext
+from .compat import MA_2
 
 
 METHODS_NEEDING_CHECK_ETAG = ['PUT', 'PATCH', 'DELETE']
@@ -59,7 +60,9 @@ def _generate_etag(data, etag_schema=None, *, extra_data=None):
     else:
         if isinstance(etag_schema, type):
             etag_schema = etag_schema()
-        raw_data = etag_schema.dump(data)[0]
+        raw_data = etag_schema.dump(data)
+        if MA_2:
+            raw_data = raw_data[0]
     if extra_data is not None:
         raw_data = (raw_data, extra_data)
     etag_data = json.dumps(raw_data, sort_keys=True)

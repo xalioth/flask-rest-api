@@ -16,6 +16,7 @@ import marshmallow as ma
 from .args_parser import abort, parser
 from .utils import get_appcontext
 from .exceptions import PageOutOfRangeError
+from .compat import MA_2
 
 
 class PaginationParameters:
@@ -43,8 +44,9 @@ class PaginationParameters:
 class PaginationParametersSchema(ma.Schema):
     """Deserializes pagination parameters into a PaginationParameters object"""
 
-    class Meta:
-        strict = True
+    if MA_2:
+        class Meta:
+            strict = True
 
     page = ma.fields.Integer(
         missing=1,
@@ -199,7 +201,10 @@ def get_pagination_metadata():
             page_params.page, page_params.page_size, item_count)
     except PageOutOfRangeError as exc:
         abort(404, messages=str(exc), exc=exc)
-    return PaginationMetadataSchema().dump(pagination_metadata)[0]
+    pagin_meta = PaginationMetadataSchema().dump(pagination_metadata)
+    if MA_2:
+        pagin_meta = pagin_meta[0]
+    return pagin_meta
 
 
 def set_pagination_metadata_in_response(response, pagination_metadata):

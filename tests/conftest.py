@@ -6,6 +6,8 @@ from marshmallow import Schema, fields
 
 from flask import Flask
 
+from flask_rest_api.compat import MA_2
+
 from .mocks import DatabaseMock
 from .utils import JSONResponse
 
@@ -41,14 +43,16 @@ def app(request):
 def schemas():
 
     class DocSchema(Schema):
-        class Meta:
-            strict = True
+        if MA_2:
+            class Meta:
+                strict = True
         item_id = fields.Int(dump_only=True)
         field = fields.Int(attribute='db_field')
 
     class DocEtagSchema(Schema):
-        class Meta:
-            strict = True
+        if MA_2:
+            class Meta:
+                strict = True
         field = fields.Int(attribute='db_field')
 
     return namedtuple(

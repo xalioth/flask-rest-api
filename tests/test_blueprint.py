@@ -8,6 +8,7 @@ from flask_rest_api import Api
 from flask_rest_api.blueprint import Blueprint
 from flask_rest_api.exceptions import InvalidLocation, MultiplePaginationModes
 from flask_rest_api.pagination import Page
+from flask_rest_api.compat import MA_2
 
 
 class TestBlueprint():
@@ -22,8 +23,9 @@ class TestBlueprint():
 
         class SampleQueryArgsSchema(ma.Schema):
             """Sample query parameters to define in documentation"""
-            class Meta:
-                strict = True
+            if MA_2:
+                class Meta:
+                    strict = True
             item_id = ma.fields.Integer(dump_only=True)
             field = ma.fields.String()
 
